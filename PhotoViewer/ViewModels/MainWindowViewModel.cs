@@ -1,19 +1,22 @@
-﻿using Prism.Mvvm;
+﻿using PhotoViewer.Views;
+using Prism.Mvvm;
+using Prism.Regions;
 
 namespace PhotoViewer.ViewModels
 {
     public class MainWindowViewModel : BindableBase
-    {
-        private string _title = "Prism Application";
-        public string Title
+    {   
+        private string _title = "Photo Viewer++";
+
+        public MainWindowViewModel(IRegionManager regionManager)
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
+            regionManager.RegisterViewWithRegion(Constants.Regions.Root, typeof(GalleryPage));
         }
 
-        public MainWindowViewModel()
+        public string Title
         {
-
+            get => _title;
+            set => SetProperty(ref _title, value);
         }
     }
 }

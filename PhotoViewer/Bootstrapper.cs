@@ -2,6 +2,7 @@
 using System.Windows;
 using Prism.Modularity;
 using DryIoc;
+using PhotoViewer.Services;
 using Prism.DryIoc;
 
 namespace PhotoViewer
@@ -16,6 +17,15 @@ namespace PhotoViewer
         protected override void InitializeShell()
         {
             Application.Current.MainWindow.Show();
+        }
+
+        protected override void ConfigureContainer()
+        {
+            base.ConfigureContainer();
+
+            Container.RegisterTypeForNavigation<GalleryPage>(Constants.Pages.Gallery);
+            Container.Register<IImageSourceLoader, ImageSourceLoader>(new SingletonReuse());
+            Container.Register<ISizingService, SizingService>(new SingletonReuse());
         }
 
         protected override void ConfigureModuleCatalog()

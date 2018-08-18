@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="PhotoViewer.Views.GalleryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
+             xmlns:behaviors="clr-namespace:PhotoViewer.Behaviors"
+             xmlns:controls="clr-namespace:PhotoViewer.Controls"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:GalleryPageViewModel}"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid>
+        <ListBox ItemsSource="{Binding Photos, Mode=OneTime}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="Height" Value="256" />
+                    <Setter Property="Width" Value="256" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:VirtualizingWrapPanel IsItemsHost="True"
+                                                    Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:PhotoViewModel}">
+                    <Grid Background="LightGray" >
+                        <ProgressBar IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     Width="125" Height="40"/>
+                        <Image Source="{Binding Image, Mode=OneWay}"
+                               Stretch="UniformToFill"
+                               Width="{Binding Width}"
+                               Height="{Binding Height}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <interactivity:Interaction.Behaviors>
+            <behaviors:ImageDropAreaBehavior ImagesDroppedCommand="{Binding ImagesDroppedCommand, Mode=OneTime}"/>
+        </interactivity:Interaction.Behaviors>
+    </Grid>
+</UserControl>
