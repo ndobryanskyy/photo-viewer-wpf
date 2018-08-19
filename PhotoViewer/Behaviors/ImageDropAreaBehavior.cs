@@ -47,14 +47,20 @@ namespace PhotoViewer.Behaviors
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                var imageFiles = files.Where(filePath =>
+                if (e.Data.GetData(DataFormats.FileDrop) is string[] files)
                 {
-                    var extension = Path.GetExtension(filePath);
-                    return SupportedDropFileFormats.Any(x => x.Equals(extension, StringComparison.InvariantCultureIgnoreCase));
-                });
+                    var imageFiles = files.Where(filePath =>
+                    {
+                        var extension = Path.GetExtension(filePath);
+                        return SupportedDropFileFormats.Any(x => x.Equals(extension, StringComparison.InvariantCultureIgnoreCase));
+                    });
 
-                ImagesDroppedCommand?.Execute(new ImagesDroppedEventArgs(imageFiles));
+                    ImagesDroppedCommand?.Execute(new ImagesDroppedEventArgs(imageFiles));
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Expected {nameof(e.Data)} to contain string[], actual: {e.Data.GetData(DataFormats.FileDrop)?.GetType().FullName ?? "NULL"}");
+                }
             }
         }
     }

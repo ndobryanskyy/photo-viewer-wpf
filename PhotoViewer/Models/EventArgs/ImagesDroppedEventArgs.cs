@@ -5,11 +5,11 @@ namespace PhotoViewer.Models.EventArgs
 {
     public class ImagesDroppedEventArgs : System.EventArgs
     {
-        public ImagesDroppedEventArgs(IEnumerable<string> paths)
+        public ImagesDroppedEventArgs(IEnumerable<string> filePaths)
         {
-            Paths = paths.ToArray();
+            FilePaths = filePaths.ToArray();
         }
 
-        public string[] Paths { get; }
+        public string[] FilePaths { get; }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
+using Prism.Commands;
 using Prism.Mvvm;
 
 namespace PhotoViewer.ViewModels
@@ -8,11 +10,14 @@ namespace PhotoViewer.ViewModels
     {
         private ImageSource _image;
 
-        public PhotoViewModel(Size imageSize)
+        public PhotoViewModel(Size imageSize, DelegateCommand<PhotoViewModel> openPhotoCommand)
         {
             Width = (int)imageSize.Width;
             Height = (int)imageSize.Height;
+            OpenPhotoCommand = openPhotoCommand;
         }
+
+        public ICommand OpenPhotoCommand { get; }
 
         public ImageSource Image
         {

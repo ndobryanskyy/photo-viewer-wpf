@@ -12,6 +12,9 @@ using System.Collections.ObjectModel;
 
 namespace PhotoViewer.Controls
 {
+    /// <summary>
+    /// The code is from https://www.codeproject.com/Articles/75847/Virtualizing-WrapPanel
+    /// </summary>
     public class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
     {
         #region Fields

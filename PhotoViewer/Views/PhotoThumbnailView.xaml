@@ -1,0 +1,74 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
+             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             x:Class="PhotoViewer.Views.PhotoThumbnailView"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance {x:Type viewModels:PhotoViewModel}}"
+             Width="256" Height="256"
+             x:Name="This">
+    <interactivity:Interaction.Triggers>
+        <interactivity:EventTrigger EventName="MouseEnter">
+            <ei:GoToStateAction TargetObject="{Binding ElementName=This}" StateName="MouseOver" UseTransitions="True"/>
+        </interactivity:EventTrigger>
+
+        <interactivity:EventTrigger EventName="MouseLeave">
+            <ei:GoToStateAction TargetObject="{Binding ElementName=This}" StateName="Normal" UseTransitions="True"/>
+        </interactivity:EventTrigger>
+    </interactivity:Interaction.Triggers>
+
+    <Grid>
+        <Border Background="LightGray"
+                Width="{Binding Width, Mode=OneTime}"
+                Height="{Binding Height, Mode=OneTime}"/>
+
+        <ProgressBar IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"
+                     Width="100" Height="25"/>
+        
+        <Border ClipToBounds="True"
+                Width="{Binding Width, Mode=OneTime}"
+                Height="{Binding Height, Mode=OneTime}">
+            <Image x:Name="Thumbnail"
+                   Source="{Binding Image, Mode=OneWay}"
+                   Stretch="UniformToFill"
+                   RenderTransformOrigin="0.5 0.5">
+                <Image.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Image.RenderTransform>
+                
+                <Image.InputBindings>
+                    <MouseBinding MouseAction="LeftDoubleClick"
+                                  Command="{Binding OpenPhotoCommand, Mode=OneTime}"
+                                  CommandParameter="{Binding}"/>
+                </Image.InputBindings>
+            </Image>
+        </Border>
+        
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates"
+                              CurrentStateChanging="CommonStates_CurrentStateChanging">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.3"/>
+                </VisualStateGroup.Transitions>
+
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="MouseOver">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Thumbnail"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="1.1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Thumbnail"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="1.1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</UserControl>

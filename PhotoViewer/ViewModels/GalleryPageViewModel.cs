@@ -6,6 +6,7 @@ using PhotoViewer.Models.EventArgs;
 using PhotoViewer.Services;
 using Prism.Commands;
 using Prism.Mvvm;
+using Prism.Regions;
 
 namespace PhotoViewer.ViewModels
 {
@@ -14,23 +15,28 @@ namespace PhotoViewer.ViewModels
         private const int ThumbnailHeight = 256;
 
         private readonly IImageSourceLoader _imageSourceLoader;
+        private readonly IRegionManager _regionManager;
 
-        public GalleryPageViewModel(IImageSourceLoader imageSourceLoader)
+        public GalleryPageViewModel(IImageSourceLoader imageSourceLoader,IRegionManager regionManager)
         {
             _imageSourceLoader = imageSourceLoader;
+            _regionManager = regionManager;
             ImagesDroppedCommand = new DelegateCommand<ImagesDroppedEventArgs>(OnImagesDropped);
+            OpenPhotoCommand = new DelegateCommand<PhotoViewModel>(OnOpenPhoto);
         }
 
         public ICommand ImagesDroppedCommand { get; }
 
-        public ObservableCollection<PhotoViewModel> Photos { get; set; } = new ObservableCollection<PhotoViewModel>();
+        public DelegateCommand<PhotoViewModel> OpenPhotoCommand { get; }
+
+        public ObservableCollection<PhotoViewModel> Photos { get; } = new ObservableCollection<PhotoViewModel>();
 
         private void OnImagesDropped(ImagesDroppedEventArgs e)
         {
-            foreach (var imagePath in e.Paths)
+            foreach (var imagePath in e.FilePaths)
             {
                 var loadingImageWithSize = _imageSourceLoader.StartLoadingImage(imagePath, ThumbnailHeight);
-                var photo = new PhotoViewModel(loadingImageWithSize.ImageSize);
+                var photo = new PhotoViewModel(loadingImageWithSize.ImageSize, OpenPhotoCommand);
                 loadingImageWithSize.ImageTask.ContinueWith(imageTask =>
                 {
                     if (!imageTask.IsFaulted)
@@ -41,6 +47,10 @@ namespace PhotoViewer.ViewModels
 
                 Photos.Add(photo);
             }
+        }
+
+        private void OnOpenPhoto(PhotoViewModel photo)
+        {
         }
     }
 }

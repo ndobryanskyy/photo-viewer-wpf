@@ -8,18 +8,23 @@
              xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
              xmlns:behaviors="clr-namespace:PhotoViewer.Behaviors"
              xmlns:controls="clr-namespace:PhotoViewer.Controls"
+             xmlns:views="clr-namespace:PhotoViewer.Views"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:GalleryPageViewModel}"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid>
         <ListBox ItemsSource="{Binding Photos, Mode=OneTime}"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 MouseDoubleClick="ListBox_MouseDoubleClick">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Center" />
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                    <Setter Property="Height" Value="256" />
-                    <Setter Property="Width" Value="256" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter Margin="15"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
@@ -30,14 +35,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:PhotoViewModel}">
-                    <Grid Background="LightGray" >
-                        <ProgressBar IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                     Width="125" Height="40"/>
-                        <Image Source="{Binding Image, Mode=OneWay}"
-                               Stretch="UniformToFill"
-                               Width="{Binding Width}"
-                               Height="{Binding Height}"/>
-                    </Grid>
+                    <views:PhotoThumbnailView />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

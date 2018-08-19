@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
@@ -9,7 +10,7 @@ namespace PhotoViewer.Models
         public AsyncLoadingImageWithSize(Size imageSize, Task<ImageSource> loadingTask)
         {
             ImageSize = imageSize;
-            ImageTask = loadingTask;
+            ImageTask = loadingTask ?? throw new ArgumentNullException(nameof(loadingTask));
         }
 
         public Size ImageSize { get; }
