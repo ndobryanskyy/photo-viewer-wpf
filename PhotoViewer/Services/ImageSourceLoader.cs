@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PhotoViewer.Models;
+using PhotoViewer.Infrastructure;
+using PhotoViewer.Infrastructure.Models;
 using Prism.Logging;
 
 namespace PhotoViewer.Services
@@ -66,9 +67,9 @@ namespace PhotoViewer.Services
                         bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                         bitmapImage.StreamSource = imageFileStream;
                         bitmapImage.EndInit();
+                        bitmapImage.Freeze();
                     }
 
-                    bitmapImage.Freeze();
                     return bitmapImage;
                 });
             }
@@ -86,25 +87,27 @@ namespace PhotoViewer.Services
                 return await Task.Run(() =>
                 {
                     var bitmapImage = new BitmapImage();
-                    using (imageFileStream)
-                    {
-                        bitmapImage.BeginInit();
+                    bitmapImage.BeginInit();
 
-                        bitmapImage.DecodePixelWidth = (int)Math.Ceiling(desiredSizeInDip.Width * _rawPixelsXScaleFactor);
-                        bitmapImage.DecodePixelHeight = (int)Math.Ceiling(desiredSizeInDip.Height * _rawPixelsYScaleFactor);
+                    bitmapImage.DecodePixelWidth = (int)Math.Ceiling(desiredSizeInDip.Width * _rawPixelsXScaleFactor);
+                    bitmapImage.DecodePixelHeight = (int)Math.Ceiling(desiredSizeInDip.Height * _rawPixelsYScaleFactor);
 
-                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                        imageFileStream.Seek(0, SeekOrigin.Begin);
-                        bitmapImage.StreamSource = imageFileStream;
-                        bitmapImage.EndInit();   
-                    }
-
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    imageFileStream.Seek(0, SeekOrigin.Begin);
+                    bitmapImage.StreamSource = imageFileStream;
+                    bitmapImage.EndInit();
                     bitmapImage.Freeze();
                     return bitmapImage;
                 });
             }
             finally
             {
+                if (imageFileStream != null)
+                {
+                    imageFileStream.Close();
+                    imageFileStream.Dispose();
+                }
+
                 _limitingSemaphoreSlim.Release();
             }
         }

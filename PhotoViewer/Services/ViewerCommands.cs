@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Windows.Input;
-using PhotoViewer.ViewModels;
+using PhotoViewer.Infrastructure;
+using PhotoViewer.Infrastructure.ViewModels;
 using Prism.Commands;
 using Prism.Regions;
 
 namespace PhotoViewer.Services
 {
-    public interface IViewerCommands
-    {
-        DelegateCommand<PhotoViewModel> OpenPhotoCommand { get; }
-
-        ICommand GoToGalleryCommand { get; }
-    }
-
     internal class ViewerCommands : IViewerCommands
     {
         private readonly IRegionManager _regionManager;

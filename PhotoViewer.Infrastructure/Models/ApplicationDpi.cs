@@ -1,4 +1,4 @@
-﻿namespace PhotoViewer.Models
+﻿namespace PhotoViewer.Infrastructure.Models
 {
     public struct ApplicationDpi
     {

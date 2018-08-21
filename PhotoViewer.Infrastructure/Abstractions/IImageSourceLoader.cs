@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Media;
-using PhotoViewer.Models;
+using PhotoViewer.Infrastructure.Models;
 
-namespace PhotoViewer.Services
+namespace PhotoViewer.Infrastructure
 {
     public interface IImageSourceLoader
     {

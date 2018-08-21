@@ -4,14 +4,15 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-using PhotoViewer.Models.EventArgs;
+using PhotoViewer.Infrastructure.Models.EventArgs;
 
-namespace PhotoViewer.Behaviors
+namespace PhotoViewer.Infrastructure.Behaviors
 {
     public class ImageDropAreaBehavior : Behavior<UIElement>
     {
         private static readonly string[] SupportedDropFileFormats = {
             ".JPG",
+            ".JPEG",
             ".PNG",
             ".BMP"
         };

@@ -1,18 +1,22 @@
-﻿using System.Threading.Tasks;
-using System.Windows;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
-using PhotoViewer.Services;
 using Prism.Commands;
 using Prism.Logging;
 using Prism.Mvvm;
 
-namespace PhotoViewer.ViewModels
+namespace PhotoViewer.Infrastructure.ViewModels
 {
-    public class PhotoViewModel : BindableBase
+    public class PhotoViewModel : BindableBase, IEquatable<string>
     {
         private readonly ILoggerFacade _loggerFacade;
+        private readonly IDispatcherService _dispatcherService;
         private readonly IImageSourceLoader _imageSourceLoader;
+
+        private readonly string _filePath;
+        private readonly double _thumbnailSizeLimit;
 
         private double _thumbnailWidth;
         private double _thumbnailHeight;
@@ -25,15 +29,21 @@ namespace PhotoViewer.ViewModels
 
         public PhotoViewModel(
             ILoggerFacade loggerFacade,
+            IConfigProvider configProvider,
+            IDispatcherService dispatcherService,
             IImageSourceLoader imageSourceLoader,
             IViewerCommands viewerCommands,
             int index,
-            string path)
+            string filePath)
         {
             _loggerFacade = loggerFacade;
+            _dispatcherService = dispatcherService;
             _imageSourceLoader = imageSourceLoader;
+            _thumbnailSizeLimit = configProvider.ThumbnailSizeLimit;
             
-            Path = path;
+            _filePath = filePath;
+            DisplayName = Path.GetFileNameWithoutExtension(_filePath);
+
             Index = index;
 
             OpenPhotoCommand = viewerCommands.OpenPhotoCommand;
@@ -42,7 +52,7 @@ namespace PhotoViewer.ViewModels
 
         public int Index { get; }
 
-        public string Path { get; }
+        public string DisplayName { get; }
 
         public DelegateCommand<PhotoViewModel> OpenPhotoCommand { get; }
 
@@ -98,15 +108,15 @@ namespace PhotoViewer.ViewModels
             if (!_isImageLoaded)
             {
                 _isImageLoaded = true;
-                _imageSourceLoader.LoadImageAsync(Path)
+                _imageSourceLoader.LoadImageAsync(_filePath)
                     .ContinueWith(imageTask => 
-                    { 
-                        Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        _dispatcherService.ExecuteOnUIThreadAsync(() =>
                         {
                             if (_isImageLoaded)
                             {
                                 Image = imageTask.Result;
-                            }
+                            }    
                         });
                     });
             }
@@ -120,7 +130,7 @@ namespace PhotoViewer.ViewModels
 
         private async Task LoadThumbnailAsync()
         {
-            var asyncLoadingImageWithSize = _imageSourceLoader.StartLoadingThumbnail(Path, 256);
+            var asyncLoadingImageWithSize = _imageSourceLoader.StartLoadingThumbnail(_filePath, _thumbnailSizeLimit);
                 
             ThumbnailWidth = asyncLoadingImageWithSize.ImageSize.Width;
             ThumbnailHeight = asyncLoadingImageWithSize.ImageSize.Height;
@@ -128,5 +138,7 @@ namespace PhotoViewer.ViewModels
             var imageSource = await asyncLoadingImageWithSize.ThumbnailTask;
             Thumbnail = imageSource;
         }
+
+        public bool Equals(string filePath) => _filePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase);
     }
 }

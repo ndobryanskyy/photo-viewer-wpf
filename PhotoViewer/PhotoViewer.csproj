@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,11 +58,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Behaviors\DetachKeyTriggersBehavior.cs" />
-    <Compile Include="Converters\ValueWhenConverter.cs" />
-    <Compile Include="Services\IPhotosService.cs" />
-    <Compile Include="Services\IPhotoViewModelFactory.cs" />
-    <Compile Include="Services\IViewerCommands.cs" />
+    <Compile Include="Services\ConfigProvider.cs" />
+    <Compile Include="Services\DispatcherService.cs" />
+    <Compile Include="Services\PhotosStore.cs" />
+    <Compile Include="Services\PhotoViewModelFactory.cs" />
+    <Compile Include="Services\SizingService.cs" />
+    <Compile Include="Services\ViewerCommands.cs" />
     <Compile Include="ViewModels\CarouselPageViewModel.cs" />
     <Compile Include="Views\CarouselPage.xaml.cs">
       <DependentUpon>CarouselPage.xaml</DependentUpon>
@@ -85,19 +87,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Behaviors\ImageDropAreaBehavior.cs" />
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Controls\VirtualizingWrapPanel.cs" />
-    <Compile Include="Models\ApplicationDpi.cs" />
-    <Compile Include="Models\AsyncLoadingThumbnail.cs" />
-    <Compile Include="Models\EventArgs\ImagesDroppedEventArgs.cs" />
-    <Compile Include="Services\IImageSourceLoader.cs" />
     <Compile Include="Services\ImageSourceLoader.cs" />
-    <Compile Include="Services\ISizingService.cs" />
     <Compile Include="ViewModels\GalleryPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\PhotoViewModel.cs" />
     <Compile Include="Views\GalleryPage.xaml.cs">
       <DependentUpon>GalleryPage.xaml</DependentUpon>
     </Compile>
@@ -125,9 +118,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -136,6 +131,11 @@
   <ItemGroup>
     <PackageReference Include="Prism.DryIoc" Version="6.3.0" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\PhotoViewer.Infrastructure\PhotoViewer.Infrastructure.csproj">
+      <Project>{9c433214-a26b-4f9b-8e7f-4983269d9c6b}</Project>
+      <Name>PhotoViewer.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

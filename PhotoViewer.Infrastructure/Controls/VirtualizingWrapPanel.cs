@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows;
-using System.Windows.Media;
-using System.Diagnostics;
-using System.ComponentModel;
 using System.Windows.Input;
-using System.Collections.ObjectModel;
+using System.Windows.Media;
 
-namespace PhotoViewer.Controls
+namespace PhotoViewer.Infrastructure.Controls
 {
     /// <summary>
     /// The code is from https://www.codeproject.com/Articles/75847/Virtualizing-WrapPanel

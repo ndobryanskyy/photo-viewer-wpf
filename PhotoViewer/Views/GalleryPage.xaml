@@ -6,41 +6,40 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
-             xmlns:behaviors="clr-namespace:PhotoViewer.Behaviors"
-             xmlns:controls="clr-namespace:PhotoViewer.Controls"
              xmlns:views="clr-namespace:PhotoViewer.Views"
+             xmlns:controls="clr-namespace:PhotoViewer.Infrastructure.Controls;assembly=PhotoViewer.Infrastructure"
+             xmlns:infrastructureViewModels="clr-namespace:PhotoViewer.Infrastructure.ViewModels;assembly=PhotoViewer.Infrastructure"
+             xmlns:behaviors="clr-namespace:PhotoViewer.Infrastructure.Behaviors;assembly=PhotoViewer.Infrastructure"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:GalleryPageViewModel}"
              prism:ViewModelLocator.AutoWireViewModel="True">
-
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ListBoxItem}" x:Key="ThumbnailListViewItemContainerStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <ContentPresenter Margin="15" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <ItemsPanelTemplate x:Key="ThumbnailsItemsPanel">
+            <controls:VirtualizingWrapPanel IsItemsHost="True"
+                                            Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+        
+        <DataTemplate DataType="{x:Type infrastructureViewModels:PhotoViewModel}" x:Key="ThumbnailItemTemplate">
+            <views:PhotoThumbnailView />
+        </DataTemplate>
+    </UserControl.Resources>
+        
     <Grid>
         <ListBox ItemsSource="{Binding Photos, Mode=OneTime}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                    <Setter Property="HorizontalContentAlignment" Value="Center" />
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <ContentPresenter Margin="15"/>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <controls:VirtualizingWrapPanel IsItemsHost="True"
-                                                    Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type viewModels:PhotoViewModel}">
-                    <views:PhotoThumbnailView />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                 ItemContainerStyle="{StaticResource ThumbnailListViewItemContainerStyle}"
+                 ItemsPanel="{StaticResource ThumbnailsItemsPanel}"
+                 ItemTemplate="{StaticResource ThumbnailItemTemplate}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
 
         <i:Interaction.Behaviors>
             <behaviors:ImageDropAreaBehavior ImagesDroppedCommand="{Binding ImagesDroppedCommand, Mode=OneTime}"/>

@@ -3,13 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
              xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:infrastructuresViewModels="clr-namespace:PhotoViewer.Infrastructure.ViewModels;assembly=PhotoViewer.Infrastructure"
+             xmlns:properties="clr-namespace:PhotoViewer.Properties"
              x:Class="PhotoViewer.Views.PhotoThumbnailView"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance {x:Type viewModels:PhotoViewModel}}"
-             Width="256" Height="256">
+             d:DataContext="{d:DesignInstance {x:Type infrastructuresViewModels:PhotoViewModel}}"
+             Width="{Binding Source={x:Static properties:Settings.Default},Path=ThumbnailSizeLimiter, Mode=OneTime}"
+             Height="{Binding Source={x:Static properties:Settings.Default},Path=ThumbnailSizeLimiter, Mode=OneTime}">
 
     <interactivity:Interaction.Triggers>
         <interactivity:EventTrigger EventName="Loaded">
@@ -42,7 +44,7 @@
                    Stretch="Uniform"
                    RenderOptions.BitmapScalingMode="HighQuality"
                    RenderTransformOrigin="0.5 0.5"
-                   ToolTip="{Binding Path}">
+                   ToolTip="{Binding DisplayName}">
 
                 <Image.Effect>
                     <BlurEffect Radius="{Binding IsImageBlurred, Converter={StaticResource IsImageBlurredToBlurRadiusConverter}, Mode=OneWay}"
@@ -68,17 +70,7 @@
                 </VisualStateGroup.Transitions>
 
                 <VisualState x:Name="Normal" />
-                <VisualState x:Name="MouseOver">
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetName="Thumbnail"
-                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                         To="1.1" />
-
-                        <DoubleAnimation Storyboard.TargetName="Thumbnail"
-                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                         To="1.1"/>
-                    </Storyboard>
-                </VisualState>
+                <VisualState x:Name="MouseOver" Storyboard="{StaticResource ThumbnailPhotoViewMouseOverStoryboard}" />
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>

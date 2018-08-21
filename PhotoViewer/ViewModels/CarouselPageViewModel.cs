@@ -1,6 +1,10 @@
-﻿using System.Windows.Input;
-using PhotoViewer.Services;
+﻿using System;
+using System.Windows.Input;
+using PhotoViewer.Infrastructure;
+using PhotoViewer.Infrastructure.Events;
+using PhotoViewer.Infrastructure.ViewModels;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Logging;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -10,8 +14,9 @@ namespace PhotoViewer.ViewModels
     public class CarouselPageViewModel : BindableBase, INavigationAware
     {
         private readonly ILoggerFacade _loggerFacade;
+        private readonly IEventAggregator _eventAggregator;
         private readonly IViewerCommands _viewerCommands;
-        private readonly IPhotosService _photosService;
+        private readonly IPhotosStore _photosStore;
 
         private PhotoViewModel _prevPhoto;
         private PhotoViewModel _currentPhoto;
@@ -19,12 +24,14 @@ namespace PhotoViewer.ViewModels
 
         public CarouselPageViewModel(
             ILoggerFacade loggerFacade,
+            IEventAggregator eventAggregator,
             IViewerCommands viewerCommands,
-            IPhotosService photosService)
+            IPhotosStore photosStore)
         {
             _loggerFacade = loggerFacade;
+            _eventAggregator = eventAggregator;
             _viewerCommands = viewerCommands;
-            _photosService = photosService;
+            _photosStore = photosStore;
 
             BackToGalleryCommand = _viewerCommands.GoToGalleryCommand;
             NextPhotoCommand = new DelegateCommand(OnNextPhoto, () => NextPhoto != null)
@@ -48,6 +55,7 @@ namespace PhotoViewer.ViewModels
                 if (SetProperty(ref _currentPhoto, value) &&
                     CurrentPhoto != null)
                 {
+                    _eventAggregator.GetEvent<ApplicationTitleChangedEvent>().Publish(CurrentPhoto.DisplayName);
                     CurrentPhoto.StartLoadingThumbnail();
                     CurrentPhoto.StartLoadingImage();
                 }
@@ -81,7 +89,7 @@ namespace PhotoViewer.ViewModels
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             if (navigationContext.Parameters[Constants.NaigationParameterKeys.PhotoIndex] is int photoIndex
-                && _photosService.TryGetPhotoByIndex(photoIndex, out var photo))
+                && _photosStore.TryGetPhotoByIndex(photoIndex, out var photo))
             {
                 CurrentPhoto = photo;
                 NextPhoto = GetNextPhoto(CurrentPhoto);
@@ -105,6 +113,8 @@ namespace PhotoViewer.ViewModels
             CurrentPhoto = null;
             NextPhoto = null;
             PrevPhoto = null;
+
+            GC.Collect();
         }
 
         private void OnNextPhoto()
@@ -125,14 +135,14 @@ namespace PhotoViewer.ViewModels
 
         private PhotoViewModel GetNextPhoto(PhotoViewModel photo)
         {
-            return _photosService.TryGetPhotoByIndex(photo.Index + 1, out var nextPhoto)
+            return _photosStore.TryGetPhotoByIndex(photo.Index + 1, out var nextPhoto)
                 ? nextPhoto
                 : null;
         }
 
         private PhotoViewModel GetPrevPhoto(PhotoViewModel photo)
         {
-            return _photosService.TryGetPhotoByIndex(photo.Index - 1, out var prevPhoto)
+            return _photosStore.TryGetPhotoByIndex(photo.Index - 1, out var prevPhoto)
                 ? prevPhoto
                 : null;
         }

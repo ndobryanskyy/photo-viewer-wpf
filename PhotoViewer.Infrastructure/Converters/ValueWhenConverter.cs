@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace PhotoViewer.Converters
+namespace PhotoViewer.Infrastructure.Converters
 {
     public class ValueWhenConverter : IValueConverter
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace PhotoViewer.Models.EventArgs
+namespace PhotoViewer.Infrastructure.Models.EventArgs
 {
     public class ImagesDroppedEventArgs : System.EventArgs
     {

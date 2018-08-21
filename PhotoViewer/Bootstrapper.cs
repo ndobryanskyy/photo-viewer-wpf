@@ -1,7 +1,7 @@
 ﻿using PhotoViewer.Views;
 using System.Windows;
-using Prism.Modularity;
 using DryIoc;
+using PhotoViewer.Infrastructure;
 using PhotoViewer.Services;
 using Prism.DryIoc;
 
@@ -30,7 +30,9 @@ namespace PhotoViewer
             Container.Register<ISizingService, SizingService>(new SingletonReuse());
             Container.Register<IViewerCommands, ViewerCommands>(new SingletonReuse());
             Container.Register<IPhotoViewModelFactory, PhotoViewModelFactory>(new SingletonReuse());
-            Container.Register<IPhotosService, PhotosService>(new SingletonReuse());
+            Container.Register<IPhotosStore, PhotosStore>(new SingletonReuse());
+            Container.Register<IConfigProvider, ConfigProvider>(new SingletonReuse());
+            Container.Register<IDispatcherService, DispatcherService>(new SingletonReuse());
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Interactivity;
 using Microsoft.Expression.Interactivity.Input;
 
-namespace PhotoViewer.Behaviors
+namespace PhotoViewer.Infrastructure.Behaviors
 {
     /// <summary>
     /// This causes this System.Window.Data Error: Cannot find governing FrameworkElement or FrameworkContentElement for target element.

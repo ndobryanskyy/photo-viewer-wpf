@@ -1,24 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using PhotoViewer.ViewModels;
+using System.Linq;
+using PhotoViewer.Infrastructure;
+using PhotoViewer.Infrastructure.ViewModels;
 
 namespace PhotoViewer.Services
 {
-    public interface IPhotosService
-    {
-        ReadOnlyObservableCollection<PhotoViewModel> Photos { get; }
-
-        void AddPhotos(ICollection<string> filePaths);
-
-        bool TryGetPhotoByIndex(int index, out PhotoViewModel photoViewModel);
-    }
-
-    internal class PhotosService : IPhotosService
+    internal class PhotosStore : IPhotosStore
     {
         private readonly IPhotoViewModelFactory _photoViewModelFactory;
         private readonly ObservableCollection<PhotoViewModel> _photos;
 
-        public PhotosService(IPhotoViewModelFactory photoViewModelFactory)
+        public PhotosStore(IPhotoViewModelFactory photoViewModelFactory)
         {
             _photoViewModelFactory = photoViewModelFactory;
 
@@ -28,11 +21,14 @@ namespace PhotoViewer.Services
 
         public ReadOnlyObservableCollection<PhotoViewModel> Photos { get; }
         
-        public void AddPhotos(ICollection<string> filePaths)
+        public void AddPhotos(IEnumerable<string> filePaths)
         {
             foreach (var filePath in filePaths)
             {
-                _photos.Add(_photoViewModelFactory.Create(_photos.Count, filePath));
+                if (!_photos.Any(x => x.Equals(filePath)))
+                {
+                    _photos.Add(_photoViewModelFactory.Create(_photos.Count, filePath));
+                }
             }
         }
 

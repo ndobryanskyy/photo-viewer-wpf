@@ -2,15 +2,11 @@
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
-using PhotoViewer.Models;
+using PhotoViewer.Infrastructure;
+using PhotoViewer.Infrastructure.Models;
 
 namespace PhotoViewer.Services
 {
-    public interface ISizingService
-    {
-        ApplicationDpi CurrentDpi { get; }
-    }
-
     internal class SizingService : ISizingService
     {
         private readonly Lazy<ApplicationDpi> _currentDpiLazy;

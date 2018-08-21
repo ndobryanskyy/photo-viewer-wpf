@@ -6,31 +6,12 @@
              xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:converters="clr-namespace:PhotoViewer.Converters"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:behaviors="clr-namespace:PhotoViewer.Behaviors"
+             xmlns:behaviors="clr-namespace:PhotoViewer.Infrastructure.Behaviors;assembly=PhotoViewer.Infrastructure"
              mc:Ignorable="d"
              x:Name="This"
 
              d:DataContext="{d:DesignInstance viewModels:CarouselPageViewModel}"
              prism:ViewModelLocator.AutoWireViewModel="True">
-    <UserControl.Resources>
-        <Storyboard x:Key="BlurInImageSoryboard">
-            <DoubleAnimation Storyboard.TargetName="Image"
-                             Storyboard.TargetProperty="(UIElement.Effect).(BlurEffect.Radius)"
-                             To="{StaticResource ImageBlurRadius}"
-                             Duration="0"/>
-        </Storyboard>
-        
-        <converters:ValueWhenConverter x:Key="IsImageBlurredToImageBlurStateNameConverter"
-                                       Value="Blurred"
-                                       Otherwise="Normal">
-            <converters:ValueWhenConverter.When>
-                <system:Boolean>True</system:Boolean>
-            </converters:ValueWhenConverter.When>
-        </converters:ValueWhenConverter>
-    </UserControl.Resources>
-
     <i:Interaction.Behaviors>
         <behaviors:DetachKeyTriggersBehavior />
     </i:Interaction.Behaviors>

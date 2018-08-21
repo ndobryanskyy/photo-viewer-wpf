@@ -1,4 +1,4 @@
-﻿namespace PhotoViewer
+﻿namespace PhotoViewer.Infrastructure
 {
     public static class Constants
     {

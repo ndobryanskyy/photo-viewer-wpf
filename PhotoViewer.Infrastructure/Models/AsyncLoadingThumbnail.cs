@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace PhotoViewer.Models
+namespace PhotoViewer.Infrastructure.Models
 {
     public class AsyncLoadingThumbnail
     {
