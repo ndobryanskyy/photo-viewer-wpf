@@ -23,15 +23,14 @@ namespace PhotoViewer
         {
             base.ConfigureContainer();
 
-            Container.RegisterTypeForNavigation<GalleryPage>(Constants.Pages.Gallery);
+            Container.RegisterTypeForNavigation<GalleryPage>(Constants.Pages.GalleryPage);
+            Container.RegisterTypeForNavigation<CarouselPage>(Constants.Pages.CarouselPage);
+            
             Container.Register<IImageSourceLoader, ImageSourceLoader>(new SingletonReuse());
             Container.Register<ISizingService, SizingService>(new SingletonReuse());
-        }
-
-        protected override void ConfigureModuleCatalog()
-        {
-            var moduleCatalog = (ModuleCatalog)ModuleCatalog;
-            //moduleCatalog.AddModule(typeof(YOUR_MODULE));
+            Container.Register<IViewerCommands, ViewerCommands>(new SingletonReuse());
+            Container.Register<IPhotoViewModelFactory, PhotoViewModelFactory>(new SingletonReuse());
+            Container.Register<IPhotosService, PhotosService>(new SingletonReuse());
         }
     }
 }

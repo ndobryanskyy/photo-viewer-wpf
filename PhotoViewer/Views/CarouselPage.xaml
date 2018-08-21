@@ -1,0 +1,133 @@
+﻿<UserControl x:Class="PhotoViewer.Views.CarouselPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:PhotoViewer.Converters"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:behaviors="clr-namespace:PhotoViewer.Behaviors"
+             mc:Ignorable="d"
+             x:Name="This"
+
+             d:DataContext="{d:DesignInstance viewModels:CarouselPageViewModel}"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <UserControl.Resources>
+        <Storyboard x:Key="BlurInImageSoryboard">
+            <DoubleAnimation Storyboard.TargetName="Image"
+                             Storyboard.TargetProperty="(UIElement.Effect).(BlurEffect.Radius)"
+                             To="{StaticResource ImageBlurRadius}"
+                             Duration="0"/>
+        </Storyboard>
+        
+        <converters:ValueWhenConverter x:Key="IsImageBlurredToImageBlurStateNameConverter"
+                                       Value="Blurred"
+                                       Otherwise="Normal">
+            <converters:ValueWhenConverter.When>
+                <system:Boolean>True</system:Boolean>
+            </converters:ValueWhenConverter.When>
+        </converters:ValueWhenConverter>
+    </UserControl.Resources>
+
+    <i:Interaction.Behaviors>
+        <behaviors:DetachKeyTriggersBehavior />
+    </i:Interaction.Behaviors>
+
+    <i:Interaction.Triggers>
+        <ei:KeyTrigger Key="Escape">
+            <i:InvokeCommandAction Command="{Binding BackToGalleryCommand, Mode=OneTime}" />
+        </ei:KeyTrigger>
+        
+        <ei:KeyTrigger Key="Up">
+            <i:InvokeCommandAction Command="{Binding NextPhotoCommand, Mode=OneTime}" />
+        </ei:KeyTrigger>
+        
+        <ei:KeyTrigger Key="Down">
+            <i:InvokeCommandAction Command="{Binding PrevPhotoCommand, Mode=OneTime}" />
+        </ei:KeyTrigger>
+        
+        <i:EventTrigger SourceObject="{Binding ElementName=This, Mode=OneTime}" EventName="Loaded">
+            <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}" 
+                                StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
+                                UseTransitions="False"/>
+        </i:EventTrigger>
+
+        <ei:PropertyChangedTrigger Binding="{Binding CurrentPhoto}">
+            <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}" 
+                                StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
+                                UseTransitions="False"/>
+        </ei:PropertyChangedTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ImageBlurVisualStates">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.4"/>
+                </VisualStateGroup.Transitions>
+
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="Blurred" Storyboard="{StaticResource BlurInImageSoryboard}" />
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <ProgressBar IsIndeterminate="True"
+                     Grid.RowSpan="3"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
+                     Width="125"
+                     Height="25"
+                     Visibility="{Binding CurrentPhoto.Image, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+        <Image x:Name="Image"
+               Grid.Row="0"
+               Grid.Column="0"
+               Grid.RowSpan="3"
+               Source="{Binding CurrentPhoto.Image, Mode=OneWay}" 
+               Stretch="Uniform"
+               RenderOptions.BitmapScalingMode="HighQuality">
+            <Image.Effect>
+                <BlurEffect Radius="0"
+                            RenderingBias="Quality" />
+            </Image.Effect>
+        </Image>
+        
+        <RepeatButton Content="Next"
+                      Grid.Row="0" Grid.Column="2"
+                      Command="{Binding NextPhotoCommand, Mode=OneTime}"
+                      Delay="500"
+                      Interval="500"/>
+
+        <ToggleButton Content="Blur" 
+                      Grid.Row="1" Grid.Column="2"
+                      IsChecked="{Binding CurrentPhoto.IsImageBlurred, Mode=TwoWay}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}"
+                                        StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
+                                        UseTransitions="True"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ToggleButton>
+
+        <RepeatButton Content="Previous" 
+                      Grid.Row="2" Grid.Column="2"
+                      Command="{Binding PrevPhotoCommand, Mode=OneTime}"
+                      Delay="500"
+                      Interval="500"/>
+    </Grid>
+</UserControl>

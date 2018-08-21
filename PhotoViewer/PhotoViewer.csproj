@@ -57,9 +57,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Behaviors\DetachKeyTriggersBehavior.cs" />
+    <Compile Include="Converters\ValueWhenConverter.cs" />
+    <Compile Include="Services\IPhotosService.cs" />
+    <Compile Include="Services\IPhotoViewModelFactory.cs" />
+    <Compile Include="Services\IViewerCommands.cs" />
+    <Compile Include="ViewModels\CarouselPageViewModel.cs" />
+    <Compile Include="Views\CarouselPage.xaml.cs">
+      <DependentUpon>CarouselPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PhotoThumbnailView.xaml.cs">
       <DependentUpon>PhotoThumbnailView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\CarouselPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GalleryPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -77,7 +90,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Models\ApplicationDpi.cs" />
-    <Compile Include="Models\AsyncLoadingImageWithSize.cs" />
+    <Compile Include="Models\AsyncLoadingThumbnail.cs" />
     <Compile Include="Models\EventArgs\ImagesDroppedEventArgs.cs" />
     <Compile Include="Services\IImageSourceLoader.cs" />
     <Compile Include="Services\ImageSourceLoader.cs" />
@@ -123,8 +136,6 @@
   <ItemGroup>
     <PackageReference Include="Prism.DryIoc" Version="6.3.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Converters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,17 +1,15 @@
 ﻿using System.Windows.Controls;
+using Prism.Regions;
 
 namespace PhotoViewer.Views
 {
-    public partial class GalleryPage : UserControl
+    public partial class GalleryPage : UserControl, IRegionMemberLifetime
     {
         public GalleryPage()
         {
             InitializeComponent();
         }
 
-        private void ListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            
-        }
+        public bool KeepAlive { get; } = true;
     }
 }

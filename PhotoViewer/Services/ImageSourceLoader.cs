@@ -29,34 +29,52 @@ namespace PhotoViewer.Services
             _rawPixelsYScaleFactor = sizingService.CurrentDpi.DpiY;
         }
 
-        public AsyncLoadingImageWithSize StartLoadingImage(string path, int maxDimensionSize)
+        public AsyncLoadingThumbnail StartLoadingThumbnail(string path, double sizeLimitInDip)
         {
             FileStream imageFileStream = null;
             try
             {
                 imageFileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                var frame = BitmapFrame.Create(imageFileStream, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
-                var isVertical = frame.PixelHeight > frame.PixelWidth;
-                
-                Size imageSize;
-                if (isVertical)
-                {
-                    var scaleFactor = maxDimensionSize / frame.Height;
-                    imageSize = new Size(frame.Width * scaleFactor, maxDimensionSize);
-                }
-                else
-                {
-                    var scaleFactor = maxDimensionSize / frame.Width;
-                    imageSize = new Size(maxDimensionSize, frame.Height * scaleFactor);
-                }
-                return new AsyncLoadingImageWithSize(imageSize, LoadImageAsync(imageFileStream, imageSize));
+                var uniformSize = ComputeUniformSizeWithLimiter(imageFileStream, sizeLimitInDip);
+                return new AsyncLoadingThumbnail(uniformSize, LoadImageAsync(imageFileStream, uniformSize));
             }
             catch (Exception ex)
             {
-                imageFileStream?.Close();
-                imageFileStream?.Dispose();
+                if (imageFileStream != null)
+                {
+                    imageFileStream.Close();
+                    imageFileStream.Dispose();
+                }
+                
                 _loggerFacade.Log($"Loading the image failed with: {ex.Message}", Category.Exception, Priority.High);
-                return new AsyncLoadingImageWithSize(Size.Empty, Task.FromResult<ImageSource>(null));
+                return new AsyncLoadingThumbnail(Size.Empty, Task.FromResult<ImageSource>(null));
+            }
+        }
+
+        public async Task<ImageSource> LoadImageAsync(string path)
+        {
+            await _limitingSemaphoreSlim.WaitAsync();
+            try
+            {
+                return await Task.Run(() =>
+                {
+                    var bitmapImage = new BitmapImage();
+
+                    using (var imageFileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        bitmapImage.BeginInit();
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.StreamSource = imageFileStream;
+                        bitmapImage.EndInit();
+                    }
+
+                    bitmapImage.Freeze();
+                    return bitmapImage;
+                });
+            }
+            finally
+            {
+                _limitingSemaphoreSlim.Release();
             }
         }
 
@@ -68,26 +86,48 @@ namespace PhotoViewer.Services
                 return await Task.Run(() =>
                 {
                     var bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
+                    using (imageFileStream)
+                    {
+                        bitmapImage.BeginInit();
 
-                    bitmapImage.DecodePixelWidth = (int)Math.Ceiling(desiredSizeInDip.Width * _rawPixelsXScaleFactor);
-                    bitmapImage.DecodePixelHeight = (int)Math.Ceiling(desiredSizeInDip.Height * _rawPixelsYScaleFactor);
+                        bitmapImage.DecodePixelWidth = (int)Math.Ceiling(desiredSizeInDip.Width * _rawPixelsXScaleFactor);
+                        bitmapImage.DecodePixelHeight = (int)Math.Ceiling(desiredSizeInDip.Height * _rawPixelsYScaleFactor);
 
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    imageFileStream.Seek(0, SeekOrigin.Begin);
-                    bitmapImage.StreamSource = imageFileStream;
-                    bitmapImage.EndInit();
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        imageFileStream.Seek(0, SeekOrigin.Begin);
+                        bitmapImage.StreamSource = imageFileStream;
+                        bitmapImage.EndInit();   
+                    }
+
                     bitmapImage.Freeze();
-
                     return bitmapImage;
                 });
             }
             finally
             {
-                imageFileStream.Close();
-                imageFileStream.Dispose();
                 _limitingSemaphoreSlim.Release();
             }
+        }
+
+        private static Size ComputeUniformSizeWithLimiter(Stream streamSource, double sizeLimitInDip)
+        {
+            var frame = BitmapFrame.Create(streamSource, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+
+            Size imageSize;
+            var isVertical = frame.PixelHeight > frame.PixelWidth;
+            
+            if (isVertical)
+            {
+                var scaleFactor = sizeLimitInDip / frame.Height;
+                imageSize = new Size(frame.Width * scaleFactor, sizeLimitInDip);
+            }
+            else
+            {
+                var scaleFactor = sizeLimitInDip / frame.Width;
+                imageSize = new Size(sizeLimitInDip, frame.Height * scaleFactor);
+            }
+
+            return imageSize;
         }
     }
 }
