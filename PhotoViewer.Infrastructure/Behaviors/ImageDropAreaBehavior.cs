@@ -2,13 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using Microsoft.Expression.Interactivity.Layout;
+using PhotoViewer.Infrastructure.Controls;
 using PhotoViewer.Infrastructure.Models.EventArgs;
 
 namespace PhotoViewer.Infrastructure.Behaviors
 {
-    public class ImageDropAreaBehavior : Behavior<UIElement>
+    public class ImageDropAreaBehavior : Behavior<FrameworkElement>
     {
         private static readonly string[] SupportedDropFileFormats = {
             ".JPG",
@@ -23,6 +27,9 @@ namespace PhotoViewer.Infrastructure.Behaviors
             typeof(ImageDropAreaBehavior),
             new PropertyMetadata(null));
 
+        private DropHereBanner _dropHereBanner;
+        private AdornerContainer _dropAdorner;
+
         public ICommand ImagesDroppedCommand
         {
             get => (ICommand) GetValue(ImagesDroppedCommandProperty);
@@ -33,8 +40,26 @@ namespace PhotoViewer.Infrastructure.Behaviors
         {
             base.OnAttached();
 
+            _dropHereBanner = new DropHereBanner();
+
+            _dropAdorner = new AdornerContainer(AssociatedObject)
+            {
+                Child = _dropHereBanner
+            };
+
             AssociatedObject.AllowDrop = true;
+            AssociatedObject.Loaded += AssociatedObjectOnLoaded;
             AssociatedObject.Drop += OnDrop;
+            AssociatedObject.DragEnter += AssociatedObjectOnDragEnter;
+            AssociatedObject.DragOver += AssociatedObjectOnDragOver;
+            AssociatedObject.DragLeave += AssociatedObjectOnDragLeave;
+        }
+
+        private void AssociatedObjectOnLoaded(object sender, RoutedEventArgs e)
+        {
+            AssociatedObject.Loaded -= AssociatedObjectOnLoaded;
+
+            AdornerLayer.GetAdornerLayer(AssociatedObject).Add(_dropAdorner);
         }
 
         protected override void OnDetaching()
@@ -42,10 +67,30 @@ namespace PhotoViewer.Infrastructure.Behaviors
             base.OnDetaching();
 
             AssociatedObject.Drop -= OnDrop;
+            AssociatedObject.DragEnter -= AssociatedObjectOnDragEnter;
+            AssociatedObject.DragLeave -= AssociatedObjectOnDragLeave;
+            AssociatedObject.DragOver -= AssociatedObjectOnDragOver;
+        }
+
+        private void AssociatedObjectOnDragEnter(object sender, DragEventArgs e)
+        {
+            _dropHereBanner.Show();
+        }
+
+        private void AssociatedObjectOnDragOver(object sender, DragEventArgs e)
+        {
+            
+        }
+
+        private void AssociatedObjectOnDragLeave(object sender, DragEventArgs e)
+        {
+            _dropHereBanner.Hide();
         }
 
         private void OnDrop(object sender, DragEventArgs e)
         {
+            _dropHereBanner.Hide();
+
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 if (e.Data.GetData(DataFormats.FileDrop) is string[] files)
