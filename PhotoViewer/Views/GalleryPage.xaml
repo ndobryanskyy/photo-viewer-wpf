@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ie="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
@@ -12,7 +13,8 @@
              xmlns:behaviors="clr-namespace:PhotoViewer.Infrastructure.Behaviors;assembly=PhotoViewer.Infrastructure"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:GalleryPageViewModel}"
-             prism:ViewModelLocator.AutoWireViewModel="True">
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Background="Transparent">
     <UserControl.Resources>
         <Style TargetType="{x:Type ListBoxItem}" x:Key="ThumbnailListViewItemContainerStyle">
             <Setter Property="Template">
@@ -33,16 +35,96 @@
             <views:PhotoThumbnailView />
         </DataTemplate>
     </UserControl.Resources>
+    
+    <i:Interaction.Behaviors>
+        <behaviors:ImageDropAreaBehavior ImagesDroppedCommand="{Binding ImagesDroppedCommand, Mode=OneTime}"/>
+    </i:Interaction.Behaviors>
+    
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="DragEnter">
+            <ie:ChangePropertyAction TargetName="NoItemsPlaceholder"
+                                     PropertyName="Visibility"
+                                     Value="Collapsed"/>
+        </i:EventTrigger>
         
+        <i:EventTrigger EventName="DragLeave">
+            <ie:ChangePropertyAction TargetName="NoItemsPlaceholder"
+                                     PropertyName="Visibility"
+                                     Value="{Binding Photos.Count, Converter={StaticResource InversedCountToVisibilityConverter}}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
-        <ListBox ItemsSource="{Binding Photos, Mode=OneTime}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <Grid Margin="25 25 0 0 ">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Viewbox Width="50"
+                     Height="50"
+                     Margin="0 0 20 0">
+                <Grid>
+                    <Path Fill="#4A566E" Data="M38.2,0h180c19.6,0,35.6,16,35.6,35.6v185.2c0,19.6-16,35.6-35.6,35.6h-180   c-19.6,0-35.6-16-35.6-35.6V35.2C2.6,16,18.6,0,38.2,0z"/>
+                    <Path Fill="{StaticResource LightenedPrimaryColorBrush}" Data="M118.6,167.6l-52.4-52.8L2.6,178.4V192v28.8c0,19.6,16,35.6,35.6,35.6h180c19.6,0,35.6-16,35.6-35.6   V192v-39.6l-59.6-60L118.6,167.6z"/>
+                </Grid>
+            </Viewbox>
+
+            <TextBlock Text="Gallery" FontSize="28"
+                       VerticalAlignment="Center"
+                       Grid.Column="1"/>
+            
+            <Border Grid.Column="1"
+                    Height="1"
+                    VerticalAlignment="Bottom">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                        <GradientStop Color="Transparent" Offset="0.0" />
+                        <GradientStop Color="{StaticResource TextColor}" Offset="0.15" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+
+        <ListBox Grid.Row="1"
+                 BorderBrush="{x:Null}"
+
+                 ItemsSource="{Binding Photos, Mode=OneTime}"
                  ItemContainerStyle="{StaticResource ThumbnailListViewItemContainerStyle}"
                  ItemsPanel="{StaticResource ThumbnailsItemsPanel}"
                  ItemTemplate="{StaticResource ThumbnailItemTemplate}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+        
+        <StackPanel x:Name="NoItemsPlaceholder"
+                    Grid.Row="1"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="{Binding Photos.Count, Converter={StaticResource InversedCountToVisibilityConverter}}">
+            <Viewbox Width="168" Height="168">
+                <Viewbox.Effect>
+                    <DropShadowEffect BlurRadius="9" Opacity="1" Color="#333"
+                                      ShadowDepth="5"
+                                      Direction="330"/>
+                </Viewbox.Effect>
+                <Grid>
+                    <Path Fill="{StaticResource PrimaryColorBrush}" Data="M127.6,195.2l-58.4-33.6v79.2c17.6,9.2,37.6,14.4,58.4,14.4c25.2,0,48.8-7.2,68.4-20L127.6,195.2z"/>
+                    <Path Fill="{StaticResource LightenedPrimaryColorBrush}" Data="M186,161.2l-58.4,34l68.4,39.6c35.6-22.8,58.8-62.4,58.8-107.2c0-2,0-4,0-6L186,161.2z"/>
+                    <Path Fill="{StaticResource PrimaryColorBrush}" Data="M186,94v67.6l68.4-39.6c-2-46.8-29.2-86.8-68.4-107.2V94z"/>
+                    <Path Fill="{StaticResource LightenedPrimaryColorBrush}" Data="M127.6,60L186,93.6V14.4C168.4,5.2,148.4,0,127.6,0c-25.2,0-48.8,7.2-68.4,20L127.6,60z"/>
+                    <Path Fill="{StaticResource  PrimaryColorBrush}" Data="M69.2,94l58.4-34L59.2,20.4C23.6,43.2,0.4,82.8,0.4,127.6c0,2,0,4,0,6L69.2,94z"/>
+                    <Path Fill="{StaticResource LightenedPrimaryColorBrush}" Data="M69.2,161.2V93.6L0.8,133.2C2.8,180,30,220,69.2,240.4V161.2z"/>
+                </Grid>
+            </Viewbox>
+            
+            <TextBlock FontSize="36" Text="No photos yet :(" TextAlignment="Center"
+                       Margin="0 20 0 0"/>
+            <TextBlock Foreground="{StaticResource PrimaryColorBrush}" Text="Try adding them via D&amp;D" TextAlignment="Center" FontSize="18"
+                       Margin="0 10 0 0"/>
+        </StackPanel>
 
-        <i:Interaction.Behaviors>
-            <behaviors:ImageDropAreaBehavior ImagesDroppedCommand="{Binding ImagesDroppedCommand, Mode=OneTime}"/>
-        </i:Interaction.Behaviors>
     </Grid>
 </UserControl>

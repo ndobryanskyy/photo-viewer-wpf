@@ -4,8 +4,21 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:PhotoViewer.Infrastructure.Converters;assembly=PhotoViewer.Infrastructure">
     <Application.Resources>
-         <system:Double x:Key="ImageBlurRadius">12.0</system:Double>
-        
+
+        <Color x:Key="PrimaryColor">#009E81</Color>
+        <SolidColorBrush x:Key="PrimaryColorBrush" Color="{StaticResource PrimaryColor}"/>
+
+        <Color x:Key="LightenedPrimaryColor">#00B594</Color>
+        <SolidColorBrush x:Key="LightenedPrimaryColorBrush" Color="{StaticResource LightenedPrimaryColor}"/>
+
+        <Color x:Key="TextColor">#666666</Color>
+        <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}"/>
+
+        <system:Double x:Key="ImageBlurRadius">12.0</system:Double>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+
         <converters:ValueWhenConverter x:Key="IsImageBlurredToBlurRadiusConverter"
                                        Value="{StaticResource ImageBlurRadius}">
             <converters:ValueWhenConverter.When>
@@ -15,7 +28,7 @@
                 <system:Double>0.0</system:Double>
             </converters:ValueWhenConverter.Otherwise>
         </converters:ValueWhenConverter>
-        
+
         <converters:ValueWhenConverter x:Key="NullToVisibilityConverter"
                                        When="{x:Null}">
             <converters:ValueWhenConverter.Value>
@@ -25,7 +38,19 @@
                 <Visibility>Collapsed</Visibility>
             </converters:ValueWhenConverter.Otherwise>
         </converters:ValueWhenConverter>
-        
+
+        <converters:ValueWhenConverter x:Key="InversedCountToVisibilityConverter">
+            <converters:ValueWhenConverter.When>
+                <system:Int32>0</system:Int32>
+            </converters:ValueWhenConverter.When>
+            <converters:ValueWhenConverter.Value>
+                <Visibility>Visible</Visibility>
+            </converters:ValueWhenConverter.Value>
+            <converters:ValueWhenConverter.Otherwise>
+                <Visibility>Collapsed</Visibility>
+            </converters:ValueWhenConverter.Otherwise>
+        </converters:ValueWhenConverter>
+
         <converters:ValueWhenConverter x:Key="IsImageBlurredToImageBlurStateNameConverter"
                                        Value="Blurred"
                                        Otherwise="Normal">
@@ -33,7 +58,7 @@
                 <system:Boolean>True</system:Boolean>
             </converters:ValueWhenConverter.When>
         </converters:ValueWhenConverter>
-        
+
         <Storyboard x:Key="ThumbnailPhotoViewMouseOverStoryboard">
             <DoubleAnimation Storyboard.TargetName="Thumbnail"
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
@@ -43,7 +68,7 @@
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
                              To="1.1"/>
         </Storyboard>
-        
+
         <Storyboard x:Key="BlurInImageSoryboard">
             <DoubleAnimation Storyboard.TargetName="Image"
                              Storyboard.TargetProperty="(UIElement.Effect).(BlurEffect.Radius)"

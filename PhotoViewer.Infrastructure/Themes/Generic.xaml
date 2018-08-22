@@ -10,12 +10,13 @@
                           RenderTransformOrigin="0.5 0.5"
                           Opacity="0"
                           IsHitTestVisible="False">
+
                         <Grid.RenderTransform>
                             <ScaleTransform ScaleX="3" ScaleY="3"/>
                         </Grid.RenderTransform>
 
                         <Grid.Resources>
-                            <SolidColorBrush x:Key="AlertBrush" Color="White"/>
+                            <SolidColorBrush x:Key="AlertBrush" Color="#EBEBEB"/>
 
                             <Storyboard x:Key="AppearStoryboard">
                                 <DoubleAnimation Storyboard.TargetName="RootGrid"

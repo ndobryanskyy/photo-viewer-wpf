@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
-        Title="{Binding Title}" Height="600" Width="800">
+        Title="{Binding Title}" Height="600" Width="800"
+        MinWidth="580"
+        MinHeight="500">
     <Grid>
         <ContentControl prism:RegionManager.RegionName="RootFrame" />
     </Grid>

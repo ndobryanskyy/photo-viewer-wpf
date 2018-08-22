@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interactivity;
@@ -17,8 +16,11 @@ namespace PhotoViewer.Infrastructure.Behaviors
         private static readonly string[] SupportedDropFileFormats = {
             ".JPG",
             ".JPEG",
+            ".JPE",
+            ".JFIF",
             ".PNG",
-            ".BMP"
+            ".BMP",
+            ".DIB"
         };
 
         public static readonly DependencyProperty ImagesDroppedCommandProperty = DependencyProperty.Register(
@@ -29,6 +31,7 @@ namespace PhotoViewer.Infrastructure.Behaviors
 
         private DropHereBanner _dropHereBanner;
         private AdornerContainer _dropAdorner;
+        private Window _window;
 
         public ICommand ImagesDroppedCommand
         {
@@ -48,17 +51,16 @@ namespace PhotoViewer.Infrastructure.Behaviors
             };
 
             AssociatedObject.AllowDrop = true;
-            AssociatedObject.Loaded += AssociatedObjectOnLoaded;
+            AssociatedObject.Loaded += OnLoaded;
             AssociatedObject.Drop += OnDrop;
-            AssociatedObject.DragEnter += AssociatedObjectOnDragEnter;
-            AssociatedObject.DragOver += AssociatedObjectOnDragOver;
-            AssociatedObject.DragLeave += AssociatedObjectOnDragLeave;
+            AssociatedObject.DragEnter += OnDragEnter;
+            AssociatedObject.DragOver += OnDragOver;
+            AssociatedObject.DragLeave += OnDragLeave;
         }
 
-        private void AssociatedObjectOnLoaded(object sender, RoutedEventArgs e)
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            AssociatedObject.Loaded -= AssociatedObjectOnLoaded;
-
+            _window = Window.GetWindow(AssociatedObject);
             AdornerLayer.GetAdornerLayer(AssociatedObject).Add(_dropAdorner);
         }
 
@@ -66,23 +68,25 @@ namespace PhotoViewer.Infrastructure.Behaviors
         {
             base.OnDetaching();
 
+            AssociatedObject.Loaded -= OnLoaded;
             AssociatedObject.Drop -= OnDrop;
-            AssociatedObject.DragEnter -= AssociatedObjectOnDragEnter;
-            AssociatedObject.DragLeave -= AssociatedObjectOnDragLeave;
-            AssociatedObject.DragOver -= AssociatedObjectOnDragOver;
+            AssociatedObject.DragEnter -= OnDragEnter;
+            AssociatedObject.DragLeave -= OnDragLeave;
+            AssociatedObject.DragOver -= OnDragOver;
         }
 
-        private void AssociatedObjectOnDragEnter(object sender, DragEventArgs e)
+        private void OnDragEnter(object sender, DragEventArgs e)
         {
+            _window.Activate();
             _dropHereBanner.Show();
         }
 
-        private void AssociatedObjectOnDragOver(object sender, DragEventArgs e)
+        private void OnDragOver(object sender, DragEventArgs e)
         {
             
         }
 
-        private void AssociatedObjectOnDragLeave(object sender, DragEventArgs e)
+        private void OnDragLeave(object sender, DragEventArgs e)
         {
             _dropHereBanner.Hide();
         }
