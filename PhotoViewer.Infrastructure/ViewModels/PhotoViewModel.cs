@@ -11,7 +11,6 @@ namespace PhotoViewer.Infrastructure.ViewModels
 {
     public class PhotoViewModel : BindableBase, IEquatable<string>
     {
-        private readonly ILoggerFacade _loggerFacade;
         private readonly IDispatcherService _dispatcherService;
         private readonly IImageSourceLoader _imageSourceLoader;
 
@@ -28,7 +27,6 @@ namespace PhotoViewer.Infrastructure.ViewModels
         private bool _isImageLoaded;
 
         public PhotoViewModel(
-            ILoggerFacade loggerFacade,
             IConfigProvider configProvider,
             IDispatcherService dispatcherService,
             IImageSourceLoader imageSourceLoader,
@@ -36,7 +34,6 @@ namespace PhotoViewer.Infrastructure.ViewModels
             int index,
             string filePath)
         {
-            _loggerFacade = loggerFacade;
             _dispatcherService = dispatcherService;
             _imageSourceLoader = imageSourceLoader;
             _thumbnailSizeLimit = configProvider.ThumbnailSizeLimit;

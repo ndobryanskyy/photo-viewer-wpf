@@ -705,7 +705,7 @@ namespace PhotoViewer.Infrastructure.Controls
             get { return _owner; }
             set { _owner = value; }
         }
-
+    
         public void SetHorizontalOffset(double offset)
         {
             if (offset < 0 || _viewport.Width >= _extent.Width)

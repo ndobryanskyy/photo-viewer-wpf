@@ -27,8 +27,8 @@
         </Style>
         
         <ItemsPanelTemplate x:Key="ThumbnailsItemsPanel">
-            <controls:VirtualizingWrapPanel IsItemsHost="True"
-                                            Orientation="Horizontal"/>
+                <controls:VirtualizingWrapPanel IsItemsHost="True"
+                                                Orientation="Horizontal"/>
         </ItemsPanelTemplate>
         
         <DataTemplate DataType="{x:Type infrastructureViewModels:PhotoViewModel}" x:Key="ThumbnailItemTemplate">
@@ -60,7 +60,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <Grid Margin="25 25 0 0 ">
+        <Grid Margin="25 25 0 15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -107,7 +107,8 @@
                  ItemContainerStyle="{StaticResource ThumbnailListViewItemContainerStyle}"
                  ItemsPanel="{StaticResource ThumbnailsItemsPanel}"
                  ItemTemplate="{StaticResource ThumbnailItemTemplate}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                 Background="Transparent"/>
         
         <StackPanel x:Name="NoItemsPlaceholder"
                     Grid.Row="1"
