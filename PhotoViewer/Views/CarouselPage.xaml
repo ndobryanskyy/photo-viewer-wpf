@@ -20,15 +20,15 @@
         <ei:KeyTrigger Key="Escape">
             <i:InvokeCommandAction Command="{Binding BackToGalleryCommand, Mode=OneTime}" />
         </ei:KeyTrigger>
-        
+
         <ei:KeyTrigger Key="Up">
-            <i:InvokeCommandAction Command="{Binding NextPhotoCommand, Mode=OneTime}" />
+            <i:InvokeCommandAction Command="{Binding GoToNextPhotoCommand, Mode=OneTime}" />
         </ei:KeyTrigger>
-        
+
         <ei:KeyTrigger Key="Down">
-            <i:InvokeCommandAction Command="{Binding PrevPhotoCommand, Mode=OneTime}" />
+            <i:InvokeCommandAction Command="{Binding GoToPrevPhotoCommand, Mode=OneTime}" />
         </ei:KeyTrigger>
-        
+
         <i:EventTrigger SourceObject="{Binding ElementName=This, Mode=OneTime}" EventName="Loaded">
             <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}" 
                                 StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
@@ -46,7 +46,7 @@
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="ImageBlurVisualStates">
                 <VisualStateGroup.Transitions>
-                    <VisualTransition GeneratedDuration="0:0:0.4"/>
+                    <VisualTransition GeneratedDuration="{StaticResource BlurAnimationDuration}"/>
                 </VisualStateGroup.Transitions>
 
                 <VisualState x:Name="Normal" />
@@ -55,16 +55,9 @@
         </VisualStateManager.VisualStateGroups>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="80"/>
         </Grid.ColumnDefinitions>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
 
         <ProgressBar IsIndeterminate="True"
                      Grid.RowSpan="3"
@@ -75,9 +68,7 @@
                      Visibility="{Binding CurrentPhoto.Image, Converter={StaticResource NullToVisibilityConverter}}"/>
 
         <Image x:Name="Image"
-               Grid.Row="0"
                Grid.Column="0"
-               Grid.RowSpan="3"
                Source="{Binding CurrentPhoto.Image, Mode=OneWay}" 
                Stretch="Uniform"
                RenderOptions.BitmapScalingMode="HighQuality">
@@ -86,29 +77,48 @@
                             RenderingBias="Quality" />
             </Image.Effect>
         </Image>
-        
-        <RepeatButton Content="Next"
-                      Grid.Row="0" Grid.Column="2"
-                      Command="{Binding NextPhotoCommand, Mode=OneTime}"
-                      Delay="500"
-                      Interval="500"/>
 
-        <ToggleButton Content="Blur" 
-                      Grid.Row="1" Grid.Column="2"
-                      IsChecked="{Binding CurrentPhoto.IsImageBlurred, Mode=TwoWay}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Click">
-                    <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}"
-                                        StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
-                                        UseTransitions="True"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </ToggleButton>
+        <Rectangle Grid.Column="1"
+                   Fill="{StaticResource PrimaryColorBrush}" />
 
-        <RepeatButton Content="Previous" 
-                      Grid.Row="2" Grid.Column="2"
-                      Command="{Binding PrevPhotoCommand, Mode=OneTime}"
-                      Delay="500"
-                      Interval="500"/>
+        <StackPanel Grid.Row="0" Grid.Column="1"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+            <RepeatButton Command="{Binding GoToNextPhotoCommand, Mode=OneTime}"
+                          Delay="500"
+                          Interval="500"
+                          Style="{StaticResource IconButtonStyle}">
+                <Path Stretch="Uniform"
+                      Fill="{Binding RelativeSource={RelativeSource Self}, Path=(TextBlock.Foreground)}"
+                      Data="M227.5,0C101.855,0,0,101.855,0,227.5S101.855,455,227.5,455S455,353.145,455,227.5S353.145,0,227.5,0z M334.411,276.772  L227.5,170.209L120.589,276.772l-21.178-21.248L227.5,127.852l128.089,127.673L334.411,276.772z"/>
+            </RepeatButton>
+
+            <ToggleButton x:Name="BlurButton"
+                          IsChecked="{Binding CurrentPhoto.IsImageBlurred, Mode=TwoWay}"
+                          Style="{StaticResource IconToggleButtonStyle}"
+                          Margin="0 55 0 0">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}"
+                                                    StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
+                                                    UseTransitions="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+                <Path Stretch="Uniform"
+                      Fill="{Binding RelativeSource={RelativeSource Self}, Path=(TextBlock.Foreground)}"
+                      Data="M406.269,10.052l-232.65,405.741c-48.889,85.779-52.665,194.85,0,286.697c79.169,138.07,255.277,185.82,393.348,106.65   c138.071-79.169,185.821-255.276,106.651-393.348L440.968,10.052C433.283-3.351,413.953-3.351,406.269,10.052z"/>
+            </ToggleButton>
+
+            <RepeatButton Command="{Binding GoToPrevPhotoCommand, Mode=OneTime}"
+                          Delay="500"
+                          Interval="500"
+                          Style="{StaticResource IconButtonStyle}"
+                          Margin="0 55 0 0"
+                          ToolTip="Previous">
+                <Path Stretch="Uniform"
+                      Fill="{Binding RelativeSource={RelativeSource Self}, Path=(TextBlock.Foreground)}"
+                      Data="M227.5,0C101.855,0,0,101.855,0,227.5S101.855,455,227.5,455S455,353.145,455,227.5S353.145,0,227.5,0z M227.5,327.148  L99.411,199.476l21.178-21.248L227.5,284.791l106.911-106.563l21.178,21.248L227.5,327.148z" />
+            </RepeatButton>
+        </StackPanel>
     </Grid>
 </UserControl>

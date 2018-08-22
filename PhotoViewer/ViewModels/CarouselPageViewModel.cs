@@ -34,18 +34,18 @@ namespace PhotoViewer.ViewModels
             _photosStore = photosStore;
 
             BackToGalleryCommand = _viewerCommands.GoToGalleryCommand;
-            NextPhotoCommand = new DelegateCommand(OnNextPhoto, () => NextPhoto != null)
+            GoToNextPhotoCommand = new DelegateCommand(OnGoToNextPhoto, () => NextPhoto != null)
                 .ObservesProperty(() => NextPhoto);
 
-            PrevPhotoCommand = new DelegateCommand(OnPrevPhoto, () => PrevPhoto != null)
+            GoToPrevPhotoCommand = new DelegateCommand(OnGoToPrevPhoto, () => PrevPhoto != null)
                 .ObservesProperty(() => PrevPhoto);
         }
 
         public ICommand BackToGalleryCommand { get; }
 
-        public ICommand NextPhotoCommand { get; }
+        public ICommand GoToNextPhotoCommand { get; }
 
-        public ICommand PrevPhotoCommand { get; }
+        public ICommand GoToPrevPhotoCommand { get; }
 
         public PhotoViewModel CurrentPhoto
         {
@@ -117,7 +117,7 @@ namespace PhotoViewer.ViewModels
             GC.Collect();
         }
 
-        private void OnNextPhoto()
+        private void OnGoToNextPhoto()
         {
             PrevPhoto?.UnloadImage();
             PrevPhoto = CurrentPhoto;
@@ -125,7 +125,7 @@ namespace PhotoViewer.ViewModels
             NextPhoto = GetNextPhoto(CurrentPhoto);
         }
 
-        private void OnPrevPhoto()
+        private void OnGoToPrevPhoto()
         {
             NextPhoto?.UnloadImage();
             NextPhoto = CurrentPhoto;
