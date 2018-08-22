@@ -108,6 +108,11 @@ namespace PhotoViewer.Infrastructure.Controls
 
         public int GetFirstVisibleSection()
         {
+            if (_abstractPanel == null)
+            {
+                return 0;
+            }
+
             int section;
             var maxSection = _abstractPanel.Max(x => x.Section);
             if (Orientation == Orientation.Horizontal)
@@ -126,7 +131,7 @@ namespace PhotoViewer.Infrastructure.Controls
         public int GetFirstVisibleIndex()
         {
             int section = GetFirstVisibleSection();
-            var item = _abstractPanel.Where(x => x.Section == section).FirstOrDefault();
+            var item = _abstractPanel?.Where(x => x.Section == section).FirstOrDefault();
             if (item != null)
                 return item._index;
             return 0;
@@ -674,25 +679,27 @@ namespace PhotoViewer.Infrastructure.Controls
 
         public void PageDown()
         {
-            SetVerticalOffset(VerticalOffset + _viewport.Height * 0.8);
+            SetVerticalOffset(VerticalOffset + _viewport.Height * ScrollToViewportFactor);
         }
 
         public void PageLeft()
         {
-            SetHorizontalOffset(HorizontalOffset - _viewport.Width * 0.8);
+            SetHorizontalOffset(HorizontalOffset - _viewport.Width * ScrollToViewportFactor);
         }
 
         public void PageRight()
         {
-            SetHorizontalOffset(HorizontalOffset + _viewport.Width * 0.8);
+            SetHorizontalOffset(HorizontalOffset + _viewport.Width * ScrollToViewportFactor);
         }
 
         public void PageUp()
         {
-            SetVerticalOffset(VerticalOffset - _viewport.Height * 0.8);
+            SetVerticalOffset(VerticalOffset - _viewport.Height * ScrollToViewportFactor);
         }
 
         private ScrollViewer _owner;
+        private const double ScrollToViewportFactor = 0.8;
+
         public ScrollViewer ScrollOwner
         {
             get { return _owner; }
