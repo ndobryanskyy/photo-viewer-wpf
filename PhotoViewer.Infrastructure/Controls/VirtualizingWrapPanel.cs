@@ -430,7 +430,7 @@ namespace PhotoViewer.Infrastructure.Controls
 
         protected override void OnInitialized(EventArgs e)
         {
-            this.SizeChanged += new SizeChangedEventHandler(this.Resizing);
+            SizeChanged += new SizeChangedEventHandler(Resizing);
             base.OnInitialized(e);
             _itemsControl = ItemsControl.GetItemsOwner(this);
             _children = InternalChildren;

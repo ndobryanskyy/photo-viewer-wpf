@@ -3,28 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:infrastructuresViewModels="clr-namespace:PhotoViewer.Infrastructure.ViewModels;assembly=PhotoViewer.Infrastructure"
              xmlns:properties="clr-namespace:PhotoViewer.Properties"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              x:Class="PhotoViewer.Views.PhotoThumbnailView"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type infrastructuresViewModels:PhotoViewModel}}"
              Width="{Binding Source={x:Static properties:Settings.Default},Path=ThumbnailSizeLimiter, Mode=OneTime}"
              Height="{Binding Source={x:Static properties:Settings.Default},Path=ThumbnailSizeLimiter, Mode=OneTime}">
 
-    <interactivity:Interaction.Triggers>
-        <interactivity:EventTrigger EventName="Loaded">
-            <interactivity:InvokeCommandAction Command="{Binding LoadThumbnailCommand, Mode=OneTime}" />
-        </interactivity:EventTrigger>
-    </interactivity:Interaction.Triggers>
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction Command="{Binding LoadThumbnailCommand, Mode=OneTime}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
     
-    <interactivity:Interaction.Behaviors>
-        <ei:DataStateBehavior Binding="{Binding ElementName=This, Path=IsMouseOver}"
+    <b:Interaction.Behaviors>
+        <b:DataStateBehavior Binding="{Binding ElementName=This, Path=IsMouseOver}"
                               Value="True"
                               TrueState="MouseOver"
                               FalseState="Normal"/>
-    </interactivity:Interaction.Behaviors>
+    </b:Interaction.Behaviors>
 
     <Grid>
         <Border Background="LightGray"

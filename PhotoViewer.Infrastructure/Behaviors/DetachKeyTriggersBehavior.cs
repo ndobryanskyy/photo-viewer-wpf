@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using System.Windows;
-using System.Windows.Interactivity;
-using Microsoft.Expression.Interactivity.Input;
+using Microsoft.Xaml.Behaviors;
+using Microsoft.Xaml.Behaviors.Input;
 
 namespace PhotoViewer.Infrastructure.Behaviors
 {
     /// <summary>
     /// This causes this System.Window.Data Error: Cannot find governing FrameworkElement or FrameworkContentElement for target element.
     /// But without it, due to not detaching <see cref="KeyTrigger"/> was causing memory leaks (View was not GC`ed) which lead  to undesired behavior.
-    /// The problem  with error poping up was not solved  due to the lack of time.
+    /// The problem with error popping up was not solved due to the lack of time.
     /// </summary>
     public class DetachKeyTriggersBehavior : Behavior<FrameworkElement>
     {

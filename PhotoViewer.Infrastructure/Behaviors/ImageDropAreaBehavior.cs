@@ -4,8 +4,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Interactivity;
-using Microsoft.Expression.Interactivity.Layout;
+using Microsoft.Xaml.Behaviors;
+using Microsoft.Xaml.Behaviors.Layout;
 using PhotoViewer.Infrastructure.Controls;
 using PhotoViewer.Infrastructure.Models.EventArgs;
 

@@ -4,43 +4,42 @@
              xmlns:prism="http://prismlibrary.com/" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:PhotoViewer.ViewModels"
-             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:PhotoViewer.Infrastructure.Behaviors;assembly=PhotoViewer.Infrastructure"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              x:Name="This"
 
              d:DataContext="{d:DesignInstance viewModels:CarouselPageViewModel}"
              prism:ViewModelLocator.AutoWireViewModel="True">
-    <i:Interaction.Behaviors>
+    <b:Interaction.Behaviors>
         <behaviors:DetachKeyTriggersBehavior />
-    </i:Interaction.Behaviors>
+    </b:Interaction.Behaviors>
 
-    <i:Interaction.Triggers>
-        <ei:KeyTrigger Key="Escape">
-            <i:InvokeCommandAction Command="{Binding BackToGalleryCommand, Mode=OneTime}" />
-        </ei:KeyTrigger>
+    <b:Interaction.Triggers>
+        <b:KeyTrigger Key="Escape">
+            <b:InvokeCommandAction Command="{Binding BackToGalleryCommand, Mode=OneTime}" />
+        </b:KeyTrigger>
 
-        <ei:KeyTrigger Key="Up">
-            <i:InvokeCommandAction Command="{Binding GoToNextPhotoCommand, Mode=OneTime}" />
-        </ei:KeyTrigger>
+        <b:KeyTrigger Key="Up">
+            <b:InvokeCommandAction Command="{Binding GoToNextPhotoCommand, Mode=OneTime}" />
+        </b:KeyTrigger>
 
-        <ei:KeyTrigger Key="Down">
-            <i:InvokeCommandAction Command="{Binding GoToPrevPhotoCommand, Mode=OneTime}" />
-        </ei:KeyTrigger>
+        <b:KeyTrigger Key="Down">
+            <b:InvokeCommandAction Command="{Binding GoToPrevPhotoCommand, Mode=OneTime}" />
+        </b:KeyTrigger>
 
-        <i:EventTrigger SourceObject="{Binding ElementName=This, Mode=OneTime}" EventName="Loaded">
-            <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}" 
+        <b:EventTrigger SourceObject="{Binding ElementName=This, Mode=OneTime}" EventName="Loaded">
+            <b:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}" 
                                 StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
                                 UseTransitions="False"/>
-        </i:EventTrigger>
+        </b:EventTrigger>
 
-        <ei:PropertyChangedTrigger Binding="{Binding CurrentPhoto}">
-            <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}" 
+        <b:PropertyChangedTrigger Binding="{Binding CurrentPhoto}">
+            <b:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}" 
                                 StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
                                 UseTransitions="False"/>
-        </ei:PropertyChangedTrigger>
-    </i:Interaction.Triggers>
+        </b:PropertyChangedTrigger>
+    </b:Interaction.Triggers>
 
     <Grid>
         <VisualStateManager.VisualStateGroups>
@@ -98,13 +97,13 @@
                           Style="{StaticResource IconToggleButtonStyle}"
                           Margin="0 55 0 0"
                           ToolTip="Blur">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Click">
-                        <ei:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}"
+                <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="Click">
+                        <b:GoToStateAction TargetObject="{Binding ElementName=This, Mode=OneTime}"
                                                     StateName="{Binding CurrentPhoto.IsImageBlurred, Converter={StaticResource IsImageBlurredToImageBlurStateNameConverter}}"
                                                     UseTransitions="True"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                    </b:EventTrigger>
+                </b:Interaction.Triggers>
 
                 <Path Stretch="Uniform"
                       Fill="{Binding RelativeSource={RelativeSource Self}, Path=(TextBlock.Foreground)}"
